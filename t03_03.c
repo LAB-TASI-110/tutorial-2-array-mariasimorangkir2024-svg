@@ -1,3 +1,5 @@
+// 12S25033 - MARIA OCTAVIA SIMORANGKIR
+
 #include <stdio.h> // Diperlukan untuk fungsi input/output seperti scanf dan printf
 
 int main() {
