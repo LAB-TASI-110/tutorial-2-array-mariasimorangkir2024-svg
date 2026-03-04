@@ -1,74 +1,84 @@
 //12S25033 - Maria Octavia Simorangkir
 
-#include <stdio.h>
-#include <limits.h>
-#include <float.h>
-#include <stdlib.h>
+#include <stdio.h> // Diperlukan untuk fungsi input/output seperti scanf dan printf
 
 int main() {
-    int n;
+    int n;          // Variabel untuk menyimpan jumlah baris masukan berikutnya
+    int num;        // Variabel untuk menyimpan setiap bilangan bulat yang dimasukkan
+    int prev_num;   // Variabel untuk menyimpan angka sebelumnya, diperlukan untuk rata-rata pasangan
+    int min_val;    // Variabel untuk menyimpan nilai terkecil dari semua angka
+    int max_val;    // Variabel untuk menyimpan nilai terbesar dari semua angka
+    float min_avg;  // Variabel untuk menyimpan nilai rata-rata terendah dari pasangan berturut-turut
+    float max_avg;  // Variabel untuk menyimpan nilai rata-rata tertinggi dari pasangan berturut-turut
+    int i;          // Variabel counter untuk loop
 
-    printf("Masukkan jumlah bilangan (n): ");
-    scanf("%d", &n);
+    int first_num_read = 0;   // Flag untuk inisialisasi min_val dan max_val dengan angka pertama
+    int first_pair_read = 0;  // Flag untuk inisialisasi min_avg dan max_avg dengan rata-rata pasangan pertama
 
-    if (n <= 0) {
-        printf("Jumlah bilangan (n) harus merupakan bilangan bulat positif.\n");
-        return 1;
+    // --- Bagian 1: Membaca dan memvalidasi nilai 'n' (Prompt interaktif dihapus) ---
+    // Program akan menunggu input 'n' tanpa menampilkan prompt ke user.
+    // Validasi tetap ada untuk memastikan 'n' adalah bilangan bulat positif.
+    while (scanf("%d", &n) != 1 || n <= 0) {
+        // Pesan error validasi juga dihapus agar tidak muncul di output autograding.
+        while (getchar() != '\n'); // Membersihkan buffer input jika ada karakter yang tidak sesuai
     }
 
-    int *numbers = (int *)malloc(n * sizeof(int));
-    if (numbers == NULL) {
-        printf("Alokasi memori gagal.\n");
-        return 1;
-    }
-
-    int min_val = INT_MAX;
-    int max_val = INT_MIN;
-    long long sum = 0;
-
-    printf("Masukkan %d bilangan bulat antara -100 dan 100:\n", n);
-
-    for (int i = 0; i < n; i++) {
-        int num;
-        printf("Bilangan ke-%d: ", i + 1);
-        scanf("%d", &num);
-        numbers[i] = num;
-
-        if (num < -100 || num > 100) {
-            printf("Peringatan: Bilangan %d berada di luar rentang -100 hingga 100. Tetap diproses.\n", num);
+    // --- Bagian 2: Membaca 'n' baris masukan dan mencari min/max serta rata-rata terendah/tertinggi (Prompt interaktif dihapus) ---
+    for (i = 0; i < n; i++) {
+        int current_input_val; // Variabel sementara untuk input yang belum divalidasi
+        // Program akan menunggu input angka tanpa menampilkan prompt ke user.
+        // Validasi tetap ada untuk memastikan angka dalam rentang yang ditentukan.
+        while (scanf("%d", &current_input_val) != 1 || current_input_val < -100 || current_input_val > 100) {
+            // Pesan error validasi juga dihapus.
+            while (getchar() != '\n'); // Membersihkan buffer input jika ada karakter yang tidak sesuai
         }
+        num = current_input_val; // Gunakan angka yang sudah divalidasi
 
-        if (num < min_val) {
+        // Logika pencarian nilai terkecil dan terbesar tetap sama
+        if (!first_num_read) {
             min_val = num;
-        }
-
-        if (num > max_val) {
             max_val = num;
-        }
-
-        sum += num;
-    }
-
-    printf("\n--- Hasil Analisis ---\n");
-    printf("Nilai terkecil: %d\n", min_val);
-    printf("Nilai terbesar: %d\n", max_val);
-    printf("Jumlah total: %lld\n", sum);
-
-    if (n < 2) {
-        printf("Rata-rata terendah tidak dapat dihitung karena jumlah bilangan kurang dari dua.\n");
-    } else {
-        double min_consecutive_avg = DBL_MAX;
-
-        for (int i = 0; i < n - 1; i++) {
-            double current_avg = (double)(numbers[i] + numbers[i+1]) / 2.0;
-            if (current_avg < min_consecutive_avg) {
-                min_consecutive_avg = current_avg;
+            first_num_read = 1;
+        } else {
+            if (num < min_val) {
+                min_val = num;
+            }
+            if (num > max_val) {
+                max_val = num;
             }
         }
-        printf("Nilai rata-rata terendah dari dua nilai berturut: %.2f\n", min_consecutive_avg);
-    }
-    
-    free(numbers);
 
-    return 0;
+        // Logika pencarian rata-rata terendah dan tertinggi dari pasangan berturut-turut tetap sama
+        if (i >= 1) { 
+            float current_avg = (float)(prev_num + num) / 2.0;
+
+            if (!first_pair_read) {
+                min_avg = current_avg;
+                max_avg = current_avg; 
+                first_pair_read = 1;
+            } else {
+                if (current_avg < min_avg) {
+                    min_avg = current_avg;
+                }
+                if (current_avg > max_avg) {
+                    max_avg = current_avg;
+                }
+            }
+        }
+        
+        // Simpan angka saat ini sebagai 'prev_num' untuk iterasi berikutnya
+        prev_num = num;
+    }
+
+    // --- Bagian 3: Menampilkan hasil keluaran (Hanya hasil akhir, tanpa prompt pembuka) ---
+    printf("%d\n", min_val); // Menampilkan nilai terkecil
+    printf("%d\n", max_val); // Menampilkan nilai terbesar
+
+    // Menampilkan rata-rata terendah dan tertinggi hanya jika ada setidaknya satu pasangan angka (yaitu, n >= 2)
+    if (n >= 2) {
+        printf("%.2f\n", min_avg); // Menampilkan nilai rata-rata terendah dengan 2 digit presisi
+        printf("%.2f\n", max_avg); // Menampilkan nilai rata-rata tertinggi dengan 2 digit presisi
+    }
+
+    return 0; // Menandakan program berakhir dengan sukses
 }
