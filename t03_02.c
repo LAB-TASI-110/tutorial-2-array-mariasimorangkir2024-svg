@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include <float.h>
-#include <stdlib.h> // Untuk malloc dan free
+#include <stdlib.h>
 
 int main() {
     int n;
